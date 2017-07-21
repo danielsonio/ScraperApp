@@ -132,6 +132,8 @@ app.get("/articles", function(req, res) {
       console.log(error);
     }
     else {
+
+      console.log("Length of the doc: "+ doc.length);
       res.render("index", { ars: doc });
     }
   });
@@ -191,15 +193,16 @@ app.post("/articles/:id", function(req, res) {
       console.log(error);
     }
     else {
-      Article.findOneAndUpdate({ "_id": req.params.id}, { "note": doc._id})
-      .exec(function(err, doc) {
+      // Find our user and push the new note id into the User's notes array
+      Article.findOneAndUpdate({}, { $push: { "note": doc._id } }, { new: true }, function(err, newdoc) {
+        // Send any errors to the browser
         if (err) {
-          console.log(err);
+          res.send(err);
         }
+        // Or send the newdoc to the browser
         else {
-          res.send(doc);
+          res.send(newdoc);
         }
-
       });
     }
   });

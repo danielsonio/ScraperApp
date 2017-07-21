@@ -14,6 +14,8 @@
 
     var thisId = $(this).attr("data-id");
     $("#notes").empty();
+    $("#title").empty();
+    $("#prevNotes").empty();
       console.log("This ID: "+ thisId);
     $('#modal1').modal('open', {opacity: .1, inDuration: 600, startingTop: '4%'});
     $.ajax({
@@ -23,22 +25,24 @@
       // With that done, add the note information to the page
       .done(function(data) {
         console.log(data);
+        console.log(data.note);
         // The title of the article
-        $("#notes").append("<h6>" + data.title + "</h6>");
-        // An input to enter a new title
-        $("#notes").append("<input id='titleinput' name='title' placeholder='Name'></input>");
+        $("#title").append("<h6 id='articletitle'>Join the conversation about <u>" + data.title + "</u></h6>");
+        $("#notes").append("<textarea id='bodyinput' type='text' name='body' placeholder='Write your comment here'></textarea>");
+        $("#notes").append("<input id='titleinput' type='text' name='title' placeholder='Post comment as...'></input>");
         // A textarea to add a new note body
-        $("#notes").append("<textarea id='bodyinput' name='body' placeholder='Message'></textarea>");
-        // A button to submit a new note, with the id of the article saved to it
-        $("#notes").append("<div class='modal-footer'><button class='modal-action modal-close' data-id='" + data._id + "' id='savenote'>Save Note</button><div>");
 
-        // If there's a note in the article
+        // A button to submit a new note, with the id of the article saved to it
+        $("#notes").append("<div class='modal-footer'><button class='modal-action modal-close' data-id='" + data._id + "' id='savenote'>Post Comment</button><div>");
+
+
         if (data.note) {
-          // Place the title of the note in the title input
-          $("#titleinput").val(data.note.title);
-          // Place the body of the note in the body textarea
-          $("#bodyinput").val(data.note.body);
+          for (var i=0;i< data.note.length;i++) {
+            $("#prevNotes").append("<p class='prevMsg'>" + data.note[i].body+"<span class='prevAuthor'> - " + data.note[i].title + "</span><p>"+"<hr />");
+          }
+
         }
+
       });
 
   });
@@ -46,8 +50,11 @@
 
 //Save a
   $(document).on("click", "#save", function() {
+    event.preventDefault();
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("data-id");
+    var card = $(this).closest(".remove-card");
+    card.remove();
     // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
       method: "POST",
@@ -64,8 +71,11 @@
 
 
   $(document).on("click", "#delete", function() {
+    event.preventDefault();
 
     var thisId = $(this).attr("data-id");
+    var card = $(this).closest(".remove-card");
+    card.remove();
     console.log("This is the ID:" + thisId);
     // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({

@@ -1,51 +1,54 @@
-<nav>
-  <div class="nav-wrapper">
-    <a href="/" class="brand-logo center">NY Times Scraper</a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <!-- <li><a class="waves-effect waves-light btn scrape-articles">Scrape</a></li> -->
 
-      <li><a href="#!" class="scrape-articles">Scrape</a></li>
-    </ul>
-    <ul id="nav-mobile" class="left hide-on-med-and-down">
-      <!-- <li><a class="waves-effect waves-light btn scrape-articles">Scrape</a></li> -->
-      <li><a href="/saved">Saved Articles</a></li>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="/" class="brand-logo center">NY Times Scraper</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <!-- <li><a class="waves-effect waves-light btn scrape-articles">Scrape</a></li> -->
 
-    </ul>
-  </div>
-</nav>
+        <li><a href="#!" class="scrape-articles">Scrape</a></li>
+      </ul>
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <!-- <li><a class="waves-effect waves-light btn scrape-articles">Scrape</a></li> -->
+        <li><a href="/saved">Saved Articles</a></li>
 
+      </ul>
+    </div>
+  </nav>
 
-<div class="row">
-  {{#each ars}}
-    <div class="col s12 m4">
-      <div class="card small  blue-grey lighten-5">
-        <div class="card-content gray-text">
-          <span class="card-title"><a href="{{link}}" target="_blank" class="headline">{{title}}</a></span>
-          <p class='byline'>{{author}}</p>
-          <p class='summary'>{{summary}}</p>
-        </div>
-        <div class="card-action">
-          <a id="delete" data-id="{{ id }}" class="waves-effect waves-light btn-small" href=""><i class="material-icons right">delete</i></a>
-          <a id="comment" data-id="{{ id }}" class="waves-effect waves-light btn-small modal-trigger" href="#modal1"><i class="material-icons left">chat</i></a>
+  <div class="row">
+    {{#each ars}}
+      <div class="col s12 m4 remove-card">
+        <div class="card small  blue-grey lighten-5">
+          <div class="card-content gray-text">
+            <span class="card-title"><a href="{{link}}" target="_blank" class="headline">{{title}}</a></span>
+            <p class='byline'>{{author}}</p>
+            <p class='summary'>{{summary}}</p>
+          </div>
+          <div class="card-action">
+            <a id="delete" data-id="{{ id }}" class="waves-effect waves-light btn-small" href=""><i class="material-icons right">delete</i></a>
+            <a id="comment" data-id="{{ id }}" class="waves-effect waves-light btn-small modal-trigger" href="#modal1"><i class="material-icons left">chat</i></a>
+          </div>
         </div>
       </div>
+    {{/each}}
+
+
+  </div>
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="ventana">
+      <div class='modal-content'>
+          <div id="title"></div>
+          <div id="notes"></div>
+          <div id="prevNotes"></div>
+      </div>
     </div>
-  {{/each}}
-
-
-</div>
-<!-- Modal Structure -->
-<div id="modal1" class="modal modal-fixed-footer">
-  <div class='model-content'>
-      <div id="notes"></div>
   </div>
 
-</div>
 
 
 
 
-</body>
 
 
 <script
