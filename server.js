@@ -28,8 +28,10 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-app.use(express.static(__dirname + "/public"));
 //Make public a static dir
+app.use(express.static(__dirname + "/public"));
+
+//Setup handlebars engine
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
@@ -54,23 +56,16 @@ db.once("open", function() {
 
 // A GET request to scrape the NY Times website
 app.get("/scrape", function(req, res) {
-
   request("http://www.nytimes.com", function(error, response, html) {
-
     var $ = cheerio.load(html);
-
-
     var result = {};
-
-
     $("article.theme-summary").each(function(i, element) {
-
       var link = $(element).children("h2.story-heading").children("a").attr("href");
       var title = $(element).children("h2.story-heading").children().text().trim();
       var author = $(element).children('.byline').text();
       var summary = $(element).children('.summary').text().trim();
-      // Save these results in an object that we'll push into the results array we defined earlier
 
+    //Verify the scrape successfully collected these elements
       if (link && title && author && summary) {
         result.link = link,
         result.title = title,
@@ -79,6 +74,7 @@ app.get("/scrape", function(req, res) {
         result.saved = false
       }
 
+      //Saves the passed articles in Articles collection
       var entry = new Article(result);
 
       entry.save(function(err, doc) {
@@ -91,13 +87,12 @@ app.get("/scrape", function(req, res) {
       });
 
     });
-
-
   });
   res.send("/articles");
 });
 
-
+//First purges all articles from the database that are not saved
+//then renders the index page with navbar and empty articles container
 app.get("/", function(req, res) {
   Article.remove({saved:false}, function(error, removed) {
     if(error) {
@@ -111,7 +106,9 @@ app.get("/", function(req, res) {
   });
 });
 
-
+//Route for the delete button in the Saved articles page.
+//Changes articles saved boolean to false, so next time the "/" page loads
+//the article is purged from the database with other "false" saved articles
 app.post("/articles/delete/:id", function(req, res) {
   Article.findOneAndUpdate({ "_id": req.params.id}, { "saved": false})
   .exec(function(err, doc) {
@@ -125,7 +122,7 @@ app.post("/articles/delete/:id", function(req, res) {
 });
 
 
-
+//Query for all unsaved articles to render on the index page
 app.get("/articles", function(req, res) {
   Article.find({saved: false}, function(error, doc) {
     if (error) {
@@ -139,7 +136,7 @@ app.get("/articles", function(req, res) {
   });
 });
 
-
+//Query to find all saved articles to render on the saved page
 app.get("/saved", function(req, res) {
   Article.find({saved: true}, function(error, doc) {
     if (error) {
@@ -152,7 +149,7 @@ app.get("/saved", function(req, res) {
 });
 
 
-// Query an article by it's ObjectId
+//Route for the comment button on the Saved page - fetches all notes associated with an article
 app.get("/articles/:id", function(req, res) {
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
   Article.findOne({ "_id": req.params.id })
@@ -171,6 +168,7 @@ app.get("/articles/:id", function(req, res) {
   });
 });
 
+//Route for save button on the index page - fetches the selected article and updates "saved" to true
 app.post("/articles/saved/:id", function(req, res) {
   Article.findOneAndUpdate({ "_id": req.params.id}, { "saved": true})
   .exec(function(err, doc) {
